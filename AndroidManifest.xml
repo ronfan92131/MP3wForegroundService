@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mp3wforegroundservice">
+    package="com.doyen.fans.mp3player">
 
     <permission android:name="FOREGROUND_SERVICE"></permission>
     <application
-        android:name=".NotificationApp"
+        android:name="com.doyen.fans.mp3Player.NotificationApp"
 
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.doyen.fans.mp3Player.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ForegroundService"></service>
+        <service android:name="com.doyen.fans.mp3Player.ForegroundService"></service>
     </application>
 
 </manifest>
