@@ -8,6 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.doyen.fans.mp3player.R;
@@ -15,14 +18,35 @@ import com.doyen.fans.mp3player.R;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MP3_ MainActivity";
     private static final  int REQUEST_CODE = 43;
-
-    Uri uri = null;
+    String cadence[]={"Normal","High"};
+    String cad;
+    Spinner mSpinCadence;
+    Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
+
+        mSpinCadence= (Spinner) findViewById(R.id.spinner_cadence);
+        mSpinCadence.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                cad = adapterView.getItemAtPosition(i).toString();
+                uri = null;
+                Log.d(TAG, "cad: " + cad);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                cad = "Normal";
+            }
+        });
+        ArrayAdapter arrayAdapterCity = new ArrayAdapter(this,android.R.layout.simple_spinner_dropdown_item,cadence);
+        arrayAdapterCity.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinCadence.setAdapter(arrayAdapterCity);
+
     }
 
     public void selectFile(View v){
@@ -53,9 +77,8 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, ForegroundService.class);
         if(uri != null) {
             serviceIntent.putExtra("URI", uri.toString());
-        }else{
-            serviceIntent.putExtra("URI", R.raw.c192);
         }
+        serviceIntent.putExtra("CADENCE", cad);
         startService(serviceIntent);
     }
 

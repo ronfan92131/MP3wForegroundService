@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -18,6 +19,7 @@ import static com.doyen.fans.mp3Player.NotificationApp.CHANNEL_ID;
 public class ForegroundService extends Service {
     public static final String TAG = "MP3_ ForegroundService";
     Uri uri = null;
+    String cadence;
     MediaPlayer player;
 
     @Override
@@ -38,15 +40,18 @@ public class ForegroundService extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
 
-
-        //startService(notificationIntent);  // android os may kill it when in background over 1 min
-        startForeground(1, notification);  //for long running service, even app is gone
-
+        if (Build.VERSION.SDK_INT >= 26) {
+            startForeground(1, notification);  //for long running service, even app is gone
+        }else{
+            startService(notificationIntent);  // earlier android version
+        }
         try{
             uri = Uri.parse(intent.getStringExtra("URI"));
         }catch (Exception e){
             Log.d(TAG, "uri not found");
         }
+
+        cadence = intent.getStringExtra("CADENCE");
         Log.d(TAG, "onStartCommand uri: " + uri);
         startMP3Player();
         return START_NOT_STICKY;
@@ -55,7 +60,6 @@ public class ForegroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-     //   stopSelf();
         stopMP3Player();
         Log.d(TAG, "onDestroy: stopSelf()");
     }
@@ -67,17 +71,18 @@ public class ForegroundService extends Service {
     }
 
     private void startMP3Player() {
-        Log.d(TAG, "startMP3Player");
         if (player == null){
             if (uri != null){
-                Log.d(TAG, "startMP3Player uri");
                 player = MediaPlayer.create(this, uri);
-            }else {
-                Log.d(TAG, "startMP3Player raw");
-                player = MediaPlayer.create(this, R.raw.c192);
+            }else if (cadence.equals("High")){
+                player = MediaPlayer.create(this, R.raw.c194);
+            }else{
+                player = MediaPlayer.create(this, R.raw.c184);
             }
         }
         player.setLooping(true);
+
+        Log.d(TAG, "startMP3Player uri:" + uri + " cadence: " + cadence);
         player.start();
     }
 
